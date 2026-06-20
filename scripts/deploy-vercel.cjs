@@ -43,6 +43,13 @@ const deploymentEnv = {
   COZE_FILE_NAME_FIELD: env.COZE_FILE_NAME_FIELD || "file_name",
 }
 
+for (const [key, value] of Object.entries(deploymentEnv)) {
+  if (!/^[A-Za-z0-9_.-]+$/.test(value)) {
+    console.error(`ERROR: ${key} contains unsupported spaces or special characters.`)
+    process.exit(1)
+  }
+}
+
 console.log("==========================================")
 console.log("Deploy AI Contract Review Demo to Vercel")
 console.log("==========================================")
@@ -72,8 +79,7 @@ const args = [
   `COZE_FILE_NAME_FIELD=${deploymentEnv.COZE_FILE_NAME_FIELD}`,
 ]
 
-const quote = (value) => `"${String(value).replaceAll('"', '\\"')}"`
-const command = ["npx.cmd", ...args.map(quote)].join(" ")
+const command = ["npx.cmd", ...args].join(" ")
 
 const result = spawnSync("cmd.exe", ["/d", "/s", "/c", command], {
   cwd: projectRoot,
