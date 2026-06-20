@@ -79,11 +79,36 @@ const args = [
   `COZE_FILE_NAME_FIELD=${deploymentEnv.COZE_FILE_NAME_FIELD}`,
 ]
 
-const command = ["npx.cmd", ...args].join(" ")
+const childEnv = { ...process.env }
+delete childEnv.VERCEL_TOKEN
+delete childEnv.vercel_token
 
-const result = spawnSync("cmd.exe", ["/d", "/s", "/c", command], {
-  cwd: projectRoot,
-  stdio: "inherit",
-})
+function runVercel(vercelArgs) {
+  const command = ["npx.cmd", "vercel@latest", ...vercelArgs].join(" ")
+  return spawnSync("cmd.exe", ["/d", "/s", "/c", command], {
+    cwd: projectRoot,
+    stdio: "inherit",
+    env: childEnv,
+  })
+}
+
+console.log("Checking Vercel login...")
+let authResult = runVercel(["whoami"])
+
+if (authResult.status !== 0) {
+  console.log("")
+  console.log("Vercel login is required. Follow the browser prompt.")
+  runVercel(["logout"])
+  authResult = runVercel(["login"])
+
+  if (authResult.status !== 0) {
+    console.error("ERROR: Vercel login did not complete.")
+    process.exit(authResult.status ?? 1)
+  }
+}
+
+console.log("")
+console.log("Vercel login succeeded. Starting production deployment...")
+const result = runVercel(args.slice(1))
 
 process.exit(result.status ?? 1)
