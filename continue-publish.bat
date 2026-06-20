@@ -10,6 +10,13 @@ echo Pushing code to GitHub...
 echo GitHub may ask you to sign in through your browser.
 echo.
 
+git config --global --add safe.directory "%CD%"
+if errorlevel 1 (
+  echo ERROR: Failed to mark the project folder as a safe Git directory.
+  pause
+  exit /b 1
+)
+
 git push -u origin main
 if errorlevel 1 (
   echo.

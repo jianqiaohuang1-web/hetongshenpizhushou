@@ -33,6 +33,12 @@ if errorlevel 1 (
 echo.
 echo Step 2: Push code to GitHub.
 echo GitHub may open a browser window for login authorization.
+git config --global --add safe.directory "%CD%"
+if errorlevel 1 (
+  echo ERROR: Failed to mark the project folder as a safe Git directory.
+  pause
+  exit /b 1
+)
 git push -u origin main
 if errorlevel 1 (
   echo.

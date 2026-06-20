@@ -72,10 +72,12 @@ const args = [
   `COZE_FILE_NAME_FIELD=${deploymentEnv.COZE_FILE_NAME_FIELD}`,
 ]
 
-const result = spawnSync("npx.cmd", args, {
+const quote = (value) => `"${String(value).replaceAll('"', '\\"')}"`
+const command = ["npx.cmd", ...args].map(quote).join(" ")
+
+const result = spawnSync("cmd.exe", ["/d", "/s", "/c", command], {
   cwd: projectRoot,
   stdio: "inherit",
-  shell: false,
 })
 
 process.exit(result.status ?? 1)
