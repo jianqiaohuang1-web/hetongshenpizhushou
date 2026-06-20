@@ -73,7 +73,7 @@ const args = [
 ]
 
 const quote = (value) => `"${String(value).replaceAll('"', '\\"')}"`
-const command = ["npx.cmd", ...args].map(quote).join(" ")
+const command = ["npx.cmd", ...args.map(quote)].join(" ")
 
 const result = spawnSync("cmd.exe", ["/d", "/s", "/c", command], {
   cwd: projectRoot,
